@@ -8,8 +8,7 @@ public final class BattleEngine {
     private static BattleEngine instance;
     private Random random = new Random(1L);
 
-    private BattleEngine() {
-    }
+    private BattleEngine() {}
 
     public static BattleEngine getInstance() {
         if (instance == null) {
@@ -23,9 +22,7 @@ public final class BattleEngine {
         return this;
     }
 
-    public void reset() {
-        // TODO: reset any battle state if you add it
-    }
+    public void reset() {}
 
     public EncounterResult runEncounter(List<Combatant> teamA, List<Combatant> teamB) {
         EncounterResult result = new EncounterResult();
@@ -39,8 +36,8 @@ public final class BattleEngine {
                 performTurn(teamB, teamA, result);
             }
         }
-        result.setWinner(teamA) ? "Team Heroes" : "Team Enemies");
         result.setRounds(currentRound);
+        result.setWinner(isAnyAlive(teamA) ? "Team Heroes" : "Team Enemies");
         result.addLog("\nWinner: " + result.getWinner() + " in " + currentRound + " rounds.");
 
         return result;
@@ -49,15 +46,11 @@ public final class BattleEngine {
     private void performTurn(List<Combatant> attackers, List<Combatant> defenders, EncounterResult result) {
         for (Combatant attacker : attackers) {
             if (!attacker.isAlive()) continue;
-
-            // Находим живых целей
             List<Combatant> aliveDefenders = defenders.stream()
                     .filter(Combatant::isAlive)
                     .collect(Collectors.toList());
 
             if (aliveDefenders.isEmpty()) break;
-
-            // Выбираем случайную цель
             Combatant target = aliveDefenders.get(random.nextInt(aliveDefenders.size()));
             int damage = attacker.getAttackPower();
 
