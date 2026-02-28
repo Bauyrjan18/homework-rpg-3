@@ -2,6 +2,7 @@ package com.narxoz.rpg.battle;
 
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public final class BattleEngine {
     private static BattleEngine instance;
@@ -27,12 +28,45 @@ public final class BattleEngine {
     }
 
     public EncounterResult runEncounter(List<Combatant> teamA, List<Combatant> teamB) {
-        // TODO: validate inputs and run round-based battle
-        // TODO: use random if you add critical hits or target selection
         EncounterResult result = new EncounterResult();
-        result.setWinner("TBD");
-        result.setRounds(0);
-        result.addLog("TODO: implement battle simulation");
+        int currentRound = 0;
+        result.addLog("Battle started between Heroes and Enemies!");
+        while (isAnyAlive(teamA) && isAnyAlive(teamB)) {
+            currentRound++;
+            result.addLog("\n--- Round " + currentRound + " ---");
+            performTurn(teamA, teamB, result);
+            if (isAnyAlive(teamB)) {
+                performTurn(teamB, teamA, result);
+            }
+        }
+        result.setWinner(teamA) ? "Team Heroes" : "Team Enemies");
+        result.setRounds(currentRound);
+        result.addLog("\nWinner: " + result.getWinner() + " in " + currentRound + " rounds.");
+
         return result;
+    }
+
+    private void performTurn(List<Combatant> attackers, List<Combatant> defenders, EncounterResult result) {
+        for (Combatant attacker : attackers) {
+            if (!attacker.isAlive()) continue;
+
+            // Находим живых целей
+            List<Combatant> aliveDefenders = defenders.stream()
+                    .filter(Combatant::isAlive)
+                    .collect(Collectors.toList());
+
+            if (aliveDefenders.isEmpty()) break;
+
+            // Выбираем случайную цель
+            Combatant target = aliveDefenders.get(random.nextInt(aliveDefenders.size()));
+            int damage = attacker.getAttackPower();
+
+            target.takeDamage(damage);
+            result.addLog(attacker.getName() + " attacks " + target.getName() + " for " + damage + " DMG.");
+        }
+    }
+
+    private boolean isAnyAlive(List<Combatant> team) {
+        return team.stream().anyMatch(Combatant::isAlive);
     }
 }

@@ -7,7 +7,6 @@ public class Mage implements Hero {
 
     public Mage(String name) {
         this.name = name;
-        // TODO: tune stats if needed
         this.power = 25;
         this.health = 80;
     }
